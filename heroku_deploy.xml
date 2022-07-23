@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="heroku_deploy" default="3_heroku_deploy" basedir=".">
+    <property name="heroku.dir" value="heroku_deploy"/>
+    <property name="heroku.app.name" value="bearded-marks-45580"/>
+    <property name="heroku.app.url" value="https://${heroku.app.name}.herokuapp.com"/>
+
+    <target name="0_heroku_install">
+        <exec dir="${heroku.dir}" executable="cmd.exe">
+            <arg line="/c start npm i -g heroku"/>
+        </exec>
+    </target>
+
+    <target name="1_heroku_login">
+        <exec dir="${heroku.dir}" executable="cmd.exe">
+            <arg line="/c start heroku login"/>
+        </exec>
+    </target>
+
+    <target name="2_heroku_init">
+        <!--<delete dir="${heroku.dir}"/>-->
+        <delete includeemptydirs="true">
+            <fileset dir="${heroku.dir}" includes="**/*" defaultexcludes="false"/>
+        </delete>
+        <mkdir dir="${heroku.dir}"/>
+        <exec dir="${heroku.dir}" executable="cmd.exe">
+            <arg line="/c git init"/>
+        </exec>
+        <exec dir="${heroku.dir}" executable="cmd.exe">
+            <arg line="/c heroku git:remote -a ${heroku.app.name}"/>
+        </exec>
+        <exec dir="${heroku.dir}" executable="cmd.exe">
+            <arg line="/c start git pull heroku master"/>
+        </exec>
+    </target>
+
+    <target name="3_heroku_deploy">
+        <!--
+        <delete includeemptydirs="true">
+            <fileset dir="${heroku.dir}" defaultexcludes="false">
+                <include name="**/*"/>
+                <exclude name=".git/"/>
+            </fileset>
+        </delete>
+        -->
+        <delete includeemptydirs="true">
+            <fileset dir="${heroku.dir}" includes="**/*" defaultexcludes="true"/>
+        </delete>
+        <copy todir="${heroku.dir}" overwrite="true">
+            <fileset dir="server">
+                <include name="**/*"/>
+                <exclude name="node_modules/"/>
+                <exclude name="uploads/"/>
+                <exclude name="yarn.lock"/>
+                <exclude name="package-lock.json"/>
+            </fileset>
+            <fileset dir="client">
+                <include name="dist/"/>
+            </fileset>
+        </copy>
+        <exec dir="${heroku.dir}" executable="cmd.exe">
+            <arg line="/c git add ."/>
+        </exec>
+        <exec dir="${heroku.dir}" executable="cmd.exe">
+            <arg line="/c git commit -am '1'"/>
+        </exec>
+        <exec dir="${heroku.dir}" executable="cmd.exe">
+            <arg line="/c start git push heroku master"/>
+        </exec>
+    </target>
+
+    <target name="4_heroku_show_in_browser">
+        <exec dir="${heroku.dir}" executable="cmd.exe">
+            <arg line="/c explorer ${heroku.app.url}"/>
+        </exec>
+    </target>
+
+    <target name="heroku_logs">
+        <exec dir="${heroku.dir}" executable="cmd.exe">
+            <arg line="/c start heroku logs --tail"/>
+        </exec>
+    </target>
+
+    <target name="heroku_push">
+        <exec dir="${heroku.dir}" executable="cmd.exe">
+            <arg line="/c start git push heroku master"/>
+        </exec>
+    </target>
+
+    <target name="heroku_pull">
+        <exec dir="${heroku.dir}" executable="cmd.exe">
+            <arg line="/c start git pull heroku master"/>
+        </exec>
+    </target>
+</project>
