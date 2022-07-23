@@ -18,10 +18,10 @@
 
     <target name="2_heroku_init">
         <!--<delete dir="${heroku.dir}"/>-->
+        <mkdir dir="${heroku.dir}"/>
         <delete includeemptydirs="true">
             <fileset dir="${heroku.dir}" includes="**/*" defaultexcludes="false"/>
         </delete>
-        <mkdir dir="${heroku.dir}"/>
         <exec dir="${heroku.dir}" executable="cmd.exe">
             <arg line="/c git init"/>
         </exec>
